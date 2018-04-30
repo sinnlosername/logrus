@@ -6,6 +6,8 @@ import (
 	"os"
 	"sync"
 	"time"
+	"runtime"
+	"strings"
 )
 
 var bufferPool *sync.Pool
@@ -62,6 +64,22 @@ func (entry *Entry) String() (string, error) {
 	}
 	str := string(serialized)
 	return str, nil
+}
+
+// Adds the field "caller" which contains the caller file and line number
+// Skip defines the amount of callers which shall be skipped
+func (entry *Entry) Caller(skip int) *Entry  {
+	caller := "unknown"
+
+	if _, file, line, ok := runtime.Caller(skip); ok {
+		if strings.Contains(file, "/") {
+			split := strings.Split(file, "/")
+			file = split[len(split) - 1]
+		}
+		caller = fmt.Sprintf("%s:%d", file, line)
+	}
+
+	return entry.WithField("caller", caller)
 }
 
 // Add an error as single field (using the key defined in ErrorKey) to the Entry.

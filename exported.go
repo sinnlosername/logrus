@@ -62,6 +62,12 @@ func WithField(key string, value interface{}) *Entry {
 	return std.WithField(key, value)
 }
 
+// Adds the field "caller" which contains the caller file and line number
+// Skip defines the amount of callers which shall be skipped
+func Caller(skip int) *Entry {
+	return std.Caller(skip + 1)
+}
+
 // WithFields creates an entry from the standard logger and adds multiple
 // fields to it. This is simply a helper for `WithField`, invoking it
 // once for each field.

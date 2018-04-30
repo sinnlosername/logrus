@@ -87,6 +87,14 @@ func (logger *Logger) releaseEntry(entry *Entry) {
 	logger.entryPool.Put(entry)
 }
 
+// Adds the field "caller" which contains the caller file and line number
+// Skip defines the amount of callers which shall be skipped
+func (logger *Logger) Caller(skip int) *Entry {
+	entry := logger.newEntry()
+	defer logger.releaseEntry(entry)
+	return entry.Caller(skip + 1)
+}
+
 // Adds a field to the log entry, note that it doesn't log until you call
 // Debug, Print, Info, Warn, Fatal or Panic. It only creates a log entry.
 // If you want multiple fields, use `WithFields`.
